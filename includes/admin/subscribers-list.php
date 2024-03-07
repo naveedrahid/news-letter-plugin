@@ -23,18 +23,53 @@ function subscribers_menu() {
 }
 add_action('admin_menu', 'subscribers_menu');
 
+function export_all_subscribers_csv() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'subscribers';
+    $subscribers = $wpdb->get_results("SELECT * FROM $table_name");
+
+    $csv_output = fopen('php://output', 'w');
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="subscribers.csv"');
+    
+    fputcsv($csv_output, array('ID', 'Name', 'Email'));
+
+    foreach ($subscribers as $subscriber) {
+        fputcsv($csv_output, array($subscriber->id, $subscriber->name, $subscriber->email));
+    }
+
+    fclose($csv_output);
+    exit;
+}
+
+add_action('admin_post_export_subscribers_csv', 'export_all_subscribers_csv');
+
+
 function display_subscribers_list() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'subscribers';
     $subscribers = $wpdb->get_results("SELECT * FROM $table_name");
 
+    echo '<div class="wrap">';
+    echo '<a href="' . admin_url('admin-post.php?action=export_subscribers_csv') . '" class="button button-primary">Export CSV</a>';
+    echo '</div>';
+    echo '<div class="wrap">';
     echo '<h2>Subscribers List</h2>';
-    echo '<table>';
-    echo '<tr><th>ID</th><th>Name</th><th>Email</th></tr>';
+    echo '<table class="wp-list-table widefat striped">';
+    echo '<thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Date</th></tr></thead>';
+    echo '<tbody>';
     foreach ($subscribers as $subscriber) {
-        echo "<tr><td>{$subscriber->id}</td><td>{$subscriber->name}</td><td>{$subscriber->email}</td></tr>";
+    $registration_date = date('d-m-Y', strtotime($subscriber->created_at));
+    echo '<tr>';
+    echo "<td>#{$subscriber->ID}</td>";
+    echo "<td>{$subscriber->name}</td>";
+    echo "<td>{$subscriber->email}</td>";
+    echo "<td>{$registration_date}</td>"; // Display registration date
+    echo '</tr>';
     }
+    echo '</tbody>';
     echo '</table>';
+    echo '</div>';
 }
 
 function display_subscribers_settings() {

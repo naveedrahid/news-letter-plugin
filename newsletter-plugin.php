@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Newsletter Plugin
-Description: Plugin to manage newsletter subscribers.
+Description: Plugin to manage newsletter subscribers use this shortcode [newsletter_form].
 Version: 1.0
-Author: Your Name
+Author: Naveed
 */
 
 if (!defined('ABSPATH')) {

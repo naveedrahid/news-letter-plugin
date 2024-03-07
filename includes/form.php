@@ -3,13 +3,30 @@
 function newsletter_form_html() {
     ob_start(); ?>
     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="newsletter-form">
-        <input type="hidden" name="action" value="handle_newsletter_form">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name"><br>
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email"><br><br>
-        <input type="submit" value="Subscribe" onclick="return validateForm()">
+                <input type="hidden" name="action" value="handle_newsletter_form">
+        <div class="newsletterWrapper">
+            <div class="newsletterName">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name">
+            </div>
+            <div class="newsletterEmail">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email">
+            </div>
+            <div class="newsletterBtn">
+                <input type="submit" value="Subscribe" onclick="return validateForm()">
+            </div>
+        </div>
     </form>
+    <?php
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'subscribers';
+    $subscribers = $wpdb->get_results("SELECT * FROM $table_name");
+    $emailExist = [];
+    foreach($subscribers as $subscriber){
+       $emailExist[] =  $subscriber->email;
+    }
+    ?>
     <div id="validation-message" style="display: none;"></div>
     <script>
         function validateForm() {
@@ -24,6 +41,8 @@ function newsletter_form_html() {
                 errorMessage += 'Email is required.\n';
             } else if (!validateEmail(email)) {
                 errorMessage += 'Invalid email address.\n';
+            } else if (<?php echo json_encode($emailExist); ?>.includes(email)) {
+                errorMessage += 'Email already exists.\n';
             }
 
             if (errorMessage !== '') {
@@ -50,6 +69,8 @@ function handle_newsletter_form() {
         $table_name = $wpdb->prefix . 'subscribers';
         $name = sanitize_text_field($_POST['name']);
         $email = sanitize_email($_POST['email']);
+        // include 'newsletter-mail.php';
+        // die;
 
         $wpdb->insert(
             $table_name,
@@ -90,11 +111,10 @@ function handle_newsletter_form() {
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
         wp_mail($to, $subject, $message, $headers);
         
-        // Add success message
         $success_message = 'Thank you for subscribing!';
         set_transient('newsletter_success_message', $success_message, 5);
 
-        wp_redirect('/');
+        wp_redirect(home_url());
         exit();
     }
 }

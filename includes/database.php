@@ -12,6 +12,7 @@ function create_subscribers_table() {
         user_id BIGINT(20) NOT NULL,
         name varchar(50) NOT NULL,
         email varchar(100) NOT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY  (ID)
     ) $charset_collate;";
 
