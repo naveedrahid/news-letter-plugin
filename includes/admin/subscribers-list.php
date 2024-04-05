@@ -32,10 +32,10 @@ function export_all_subscribers_csv() {
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment; filename="subscribers.csv"');
     
-    fputcsv($csv_output, array('ID', 'Name', 'Email'));
+    fputcsv($csv_output, array('ID', 'Email'));
 
     foreach ($subscribers as $subscriber) {
-        fputcsv($csv_output, array($subscriber->id, $subscriber->name, $subscriber->email));
+        fputcsv($csv_output, array($subscriber->id, $subscriber->email));
     }
 
     fclose($csv_output);
@@ -56,13 +56,12 @@ function display_subscribers_list() {
     echo '<div class="wrap">';
     echo '<h2>Subscribers List</h2>';
     echo '<table class="wp-list-table widefat striped">';
-    echo '<thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Date</th></tr></thead>';
+    echo '<thead><tr><th>ID</th><th>Email</th><th>Date</th></tr></thead>';
     echo '<tbody>';
     foreach ($subscribers as $subscriber) {
     $registration_date = date('d-m-Y', strtotime($subscriber->created_at));
     echo '<tr>';
     echo "<td>#{$subscriber->ID}</td>";
-    echo "<td>{$subscriber->name}</td>";
     echo "<td>{$subscriber->email}</td>";
     echo "<td>{$registration_date}</td>"; // Display registration date
     echo '</tr>';

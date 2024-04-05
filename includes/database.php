@@ -10,7 +10,6 @@ function create_subscribers_table() {
     $sql = "CREATE TABLE `{$wpdb->base_prefix}subscribers` (
         ID bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
         user_id BIGINT(20) NOT NULL,
-        name varchar(50) NOT NULL,
         email varchar(100) NOT NULL,
         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY  (ID)
